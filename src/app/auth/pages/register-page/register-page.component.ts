@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { EmailValidatorService } from 'src/app/shared/service/email-validator.service';
 
-import * as customValidators from 'src/app/shared/validators/validators';
+import { ValidatorsService } from 'src/app/shared/service/validators.service';
 
 
 @Component({
@@ -17,7 +18,7 @@ export class RegisterPageComponent {
       '', 
       [ 
         Validators.required, 
-        Validators.pattern(customValidators.firstNameAndLastNamePattern)
+        Validators.pattern(this._validatorsService.firstNameAndLastNamePattern)
       ]
     ],
     // email: ['', [ Validators.required, Validators.pattern( this.validatorsService.emailPattern )], [ new EmailValidator() ]],
@@ -25,23 +26,27 @@ export class RegisterPageComponent {
       '', 
       [ 
         Validators.required, 
-        Validators.pattern(customValidators.emailPattern) 
+        Validators.pattern(this._validatorsService.emailPattern) 
       ], 
-      [  ]
+      [ this._emailValidatorService ]
     ],
-    username: ['', [ Validators.required, customValidators.cantBeStrider ]],
+    username: ['', [ Validators.required, this._validatorsService.cantBeStrider ]],
     password: ['', [ Validators.required, Validators.minLength(6) ]],
     password2: ['', [ Validators.required ]],
   }, {
-    // validators: [
-    //   this.validatorsService.isFieldOneEqualFieldTwo('password','password2')
-    // ]
+    validators: [
+      this._validatorsService.isFieldOneEqualFieldTwo('password', 'password2')
+    ]
   });
 
-  constructor( private _fb: FormBuilder ) {}
+  constructor( 
+    private _fb: FormBuilder,
+    private _validatorsService: ValidatorsService,
+    private _emailValidatorService: EmailValidatorService,
+  ) {}
 
   isValidField( field: string ) {
-    // return this.validatorsService.isValidField( this.myForm, field );
+    return this._validatorsService.isValidField( this.myForm, field );
   }
 
   onSubmit() {
